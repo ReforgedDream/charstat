@@ -2,28 +2,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TextStatistics {
-    private String stringToAnalyze;
 
-    public TextStatistics(String inputString) {
-        this.stringToAnalyze = inputString;
-    }
-
-    public void analyze() {
-        Map<Character, Short> stats = new HashMap<Character, Short>();
-
-        for (int i = 0; i < this.stringToAnalyze.length(); i++) {
+    public void analyzeString(String stringToAnalyze) {
+        System.out.println(stringToAnalyze);
+        Map<Character, Short> statisticsMap = new HashMap<Character, Short>();
+        for (int i = 0; i < stringToAnalyze.length(); i++) {
             Short currentCount;
-            Character currentChar = this.stringToAnalyze.charAt(i);
-            if (stats.containsKey(currentChar)) {
-                currentCount = stats.get(currentChar);
+            Character currentChar = stringToAnalyze.charAt(i);
+            if (statisticsMap.containsKey(currentChar)) {
+                currentCount = statisticsMap.get(currentChar);
                 currentCount++;
             } else {
                 currentCount = 1;
             }
-            stats.put(currentChar, currentCount);
+            statisticsMap.put(currentChar, currentCount);
         }
+        printStatistics(statisticsMap);
+    }
 
-        for (Map.Entry<Character, Short> entry : stats.entrySet()) {
+    private void printStatistics(Map<Character, Short> mapToPrint) {
+        for (Map.Entry<Character, Short> entry : mapToPrint.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
     }

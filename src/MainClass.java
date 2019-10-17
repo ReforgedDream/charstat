@@ -1,7 +1,12 @@
+import utils.FileReader;
+
 public class MainClass {
     public static void main(String[] args) {
-        String inputString = "aaabbbbbcdd";
-        TextStatistics ts = new TextStatistics(inputString);
-        ts.analyze();
+
+        FileReader fr = new FileReader("..\\samples\\alphabetic.txt");
+        String inputString = fr.ReadFile();
+
+        TextStatistics ts = new TextStatistics();
+        ts.analyzeString(inputString);
     }
 }
