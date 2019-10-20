@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
+/**
+ * A singleton file writer class
+ */
 public class FileWriter {
-
     private static FileWriter instance;
 
     public static synchronized FileWriter getInstance() {
@@ -18,18 +19,31 @@ public class FileWriter {
         return instance;
     }
 
-    public void writeToFile(String fileName, String lineToWrite) {
-        // convert the string to a byte array
-        byte data[] = lineToWrite.getBytes();
-        //A path to file
-        String path = "text/OUT/" + fileName + ".txt";
-        Path file = Paths.get(path);
+    /**
+     * Compose path to output dir and write the string to new file. Creates output dir if doesn't exists
+     *
+     * @param fileName    a name for the output file
+     * @param lineToWrite string to be written
+     */
+    public void writeToFile(String fileName, Path outputPath, String lineToWrite) {
+        if (fileName != null && !fileName.isEmpty() &&
+                lineToWrite != null && !lineToWrite.isEmpty()) {
 
-        try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(file));) {
-            //append the input string
-            out.write(data, 0, data.length);
-        } catch (IOException e) {
-            e.printStackTrace();
+            byte[] data = lineToWrite.getBytes();
+
+            Path pathToFile = outputPath.resolve(fileName);
+            if (!outputPath.toFile().exists()) {
+                try {
+                    Files.createDirectory(outputPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(pathToFile))) {
+                out.write(data, 0, data.length);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

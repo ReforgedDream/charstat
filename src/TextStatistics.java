@@ -1,59 +1,65 @@
-import utils.FileWriter;
-
 import java.util.*;
 
-public class TextStatistics {
+class TextStatistics {
 
-    public void analyzeString(String stringToAnalyze) {
+    /**
+     * Method that compose a textual report about input string
+     *
+     * @param stringToAnalyze a string to be analyzed
+     * @return Human-readable report as String
+     */
+    static String analyzeString(String stringToAnalyze) {
         System.out.println(stringToAnalyze);
+
+        List<Map.Entry<Character, Short>> list = countAndSortLetters(stringToAnalyze);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<Character, Short> entry : list) {
+            stringBuilder.append(entry.getKey());
+            stringBuilder.append(": ");
+            stringBuilder.append(entry.getValue());
+            stringBuilder.append("\r\n");
+        }
+
+        stringBuilder.append("Number of words: ");
+        stringBuilder.append(getNumberOfWords(stringToAnalyze));
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Analyzes number of each letter in input string
+     *
+     * @param inputString a string to be analyzed
+     * @return List sorted by descendant number of entries
+     */
+    private static List<Map.Entry<Character, Short>> countAndSortLetters(String inputString) {
         Map<Character, Short> statisticsMap = new HashMap<>();
-        for (int i = 0; i < stringToAnalyze.length(); i++) {
-            Short currentCount = 0;
-            Character currentChar = stringToAnalyze.charAt(i);
+        for (int i = 0; i < inputString.length(); i++) {
+
+            Character currentChar = inputString.charAt(i);
+
             if (Character.isLetter(currentChar)) {
+                Short currentCount = 1;
                 if (statisticsMap.containsKey(currentChar)) {
                     currentCount = statisticsMap.get(currentChar);
                     currentCount++;
-                } else {
-                    currentCount = 1;
                 }
                 statisticsMap.put(currentChar, currentCount);
             }
         }
-
-        List<Map.Entry<Character, Short>> list = new LinkedList(statisticsMap.entrySet());
-
-        Collections.sort(list, new Comparator<Map.Entry<Character, Short>>() {
-            public int compare(Map.Entry<Character, Short> o1, Map.Entry<Character, Short> o2) {
-                return o2.getValue().compareTo(o1.getValue());
-            }
-        });
-
-        StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Character, Short> entry : list) {
-            sb.append(entry.getKey());
-            sb.append(": ");
-            sb.append(entry.getValue());
-            sb.append("\r\n");
-        }
-
-        sb.append("Number of words: ");
-        sb.append(getNumberOfWords(stringToAnalyze));
-
-        printResults(sb.toString());
-        saveResults(sb.toString());
+        List<Map.Entry<Character, Short>> list = new ArrayList<>(statisticsMap.entrySet());
+        list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        return list;
     }
 
-    private void printResults(String results) {
-        System.out.println(results);
-    }
-
-    private void saveResults(String results) {
-        FileWriter fr = FileWriter.getInstance();
-        fr.writeToFile("input", results);
-    }
-
-    private short getNumberOfWords(String inputString) {
+    /**
+     * Counts number of words. Preposition signs such as standalone & considered non-words
+     *
+     * @param inputString a string to be analyzed
+     * @return number of words
+     */
+    private static short getNumberOfWords(String inputString) {
         String regexpWordSeparator = "\\s";
         String regexpNotWord = "\\p{Punct}+";
         String[] words = inputString.split(regexpWordSeparator);
